@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Romantic Surprise</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(270deg, #ffdde1, #ee9ca7, #ffd6e0, #ee9ca7);
+      background-size: 800% 800%;
+      animation: gradient 20s ease infinite;
+      font-family: 'Great Vibes', cursive;
+      overflow: hidden;
+      cursor: url('https://cur.cursors-4u.net/others/oth-1/oth26.cur'), auto;
+    }
+
+    @keyframes gradient {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100vh;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    #enterScreen {
+      display: flex;
+      opacity: 1;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1.5em;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      outline: none;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.8);
+      color: #ff6f91;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1.5em;
+      border: none;
+      border-radius: 10px;
+      background-color: #ff6f91;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    button:hover {
+      background-color: #ff3e6c;
+      transform: scale(1.05);
+    }
+
+    .heart {
+      width: 100px;
+      height: 100px;
+      background: red;
+      position: relative;
+      transform: rotate(-45deg);
+      animation: heartbeat 1s infinite;
+      margin: 30px auto;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      width: 100px;
+      height: 100px;
+      background: red;
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    .heart::before {
+      top: -50px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: 50px;
+      top: 0;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1) rotate(-45deg); }
+      50% { transform: scale(1.2) rotate(-45deg); }
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 1.2em;
+      text-shadow: 1px 1px 5px #ff6f91;
+    }
+
+    .floating-hearts {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .heart-shape {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      transform: rotate(45deg);
+      animation: float 10s linear infinite;
+      opacity: 0.7;
+    }
+
+    .heart-shape::before,
+    .heart-shape::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      border-radius: 50%;
+    }
+
+    .heart-shape::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart-shape::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); }
+      100% { transform: translateY(-10vh) rotate(360deg); }
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: white;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      animation: sparkle 3s infinite;
+    }
+
+    @keyframes sparkle {
+      0% { transform: translate(0, 0) scale(1); opacity: 1;}
+      50% { transform: translate(-20px, -20px) scale(1.5); opacity: 0.5;}
+      100% { transform: translate(0, 0) scale(1); opacity: 1;}
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2em;
+      }
+
+      input, button {
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Floating hearts -->
+  <div class="floating-hearts"></div>
+
+  <!-- Sparkle effect -->
+  <div class="sparkle"></div>
+
+  <!-- First Screen: Enter Name -->
+  <div id="enterScreen" class="screen">
+    <h1>Enter Your Name 💖</h1>
+    <input type="text" id="nameInput" placeholder="Your Name">
+    <button onclick="showLove()">Enter</button>
+  </div>
+
+  <!-- Second Screen: Romantic Page -->
+  <div id="loveScreen" class="screen">
+    <h1 id="loveMessage"></h1>
+    <div class="heart"></div>
+    <p>Forever & Always With You</p>
+    <div class="footer">Made with Endless Love 💌</div>
+  </div>
+
+  <!-- Sound effects -->
+  <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3" preload="auto"></audio>
+  <audio id="bgMusic" src="https://www.bensound.com/bensound-music/bensound-sunny.mp3" preload="auto" loop></audio>
+
+  <!-- Confetti library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    const heartContainer = document.querySelector('.floating-hearts');
+
+    // Create floating hearts
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart-shape';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+      heartContainer.appendChild(heart);
+
+      setTimeout(() => {
+        heart.remove();
+      }, 10000);
+    }
+    setInterval(createHeart, 500);
+
+    function showLove() {
+      const name = document.getElementById('nameInput').value.trim();
+      const clickSound = document.getElementById('clickSound');
+      const bgMusic = document.getElementById('bgMusic');
+
+      if(name !== "") {
+        clickSound.play();
+        bgMusic.play();
+
+        const enterScreen = document.getElementById('enterScreen');
+        enterScreen.style.opacity = 0;
+
+        setTimeout(() => {
+          enterScreen.style.display = "none";
+          const loveScreen = document.getElementById('loveScreen');
+          loveScreen.style.display = "flex";
+
+          setTimeout(() => {
+            loveScreen.style.opacity = 1;
+          }, 50);
+
+          typeWriter(`You're My Everything, ${name} 💖`, "loveMessage", 100);
+
+          // Fire confetti
+          confetti({
+            particleCount: 200,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+
+        }, 1000);
+      } else {
+        alert("Please enter your name!");
+      }
+    }
+
+    function typeWriter(text, elementId, speed) {
+      let i = 0;
+      const element = document.getElementById(elementId);
+      element.innerHTML = "";
+      const timer = setInterval(() => {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+        } else {
+          clearInterval(timer);
+        }
+      }, speed);
+    }
+  </script>
+
+</body>
+</html>
